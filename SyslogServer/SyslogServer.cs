@@ -7,15 +7,12 @@ namespace SyslogServer
         UPD,
         TCP,
         TLS
-    }
+    } // End Enum NetworkProtocol 
 
 
+    // TODO: create a composite-class for a general syslog server 
     class SyslogServer
     {
-        public SyslogServer()
-        { 
-        
-        }
 
         protected TlsSyslogServer TlsServer;
         protected UpdSyslogServer UdpServer;
@@ -25,6 +22,13 @@ namespace SyslogServer
         protected SyslogTcpSession TcpSession;
 
         public int Port;
+
+
+        public SyslogServer()
+        {
+
+        } // End Constructor 
+
 
         public void Start(NetworkProtocol protocol, System.Net.IPAddress address, int port)
         {
@@ -41,7 +45,8 @@ namespace SyslogServer
                     break;
             }
 
-        }
+        } // End Sub Start 
+
 
         public void Start(NetworkProtocol protocol, System.Net.IPAddress address)
         {
@@ -58,15 +63,16 @@ namespace SyslogServer
             }
 
             Start(protocol, address, this.Port);
-        }
+        } // End Sub Start  
 
 
         public void Stop()
         {
 
-        }
+        } // End Sub Stop 
 
 
+    } // End Class SyslogServer 
 
-    }
-}
+
+} // End Namespace SyslogServer 

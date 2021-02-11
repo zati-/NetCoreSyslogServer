@@ -2,7 +2,7 @@
 namespace SyslogServer
 {
 
-    public class Rfc3164SyslogMessage 
+    public class Rfc3164SyslogMessage
     {
         public FacilityType Facility { get; set; }
         public SeverityType Severity { get; set; }
@@ -12,14 +12,7 @@ namespace SyslogServer
         public string RemoteIP { get; set; }
         public System.DateTime LocalDate { get; set; }
 
-
-
-        public static Rfc3164SyslogMessage Parse(string syslogMessage)
-        {
-            Rfc3164SyslogMessage msg = null;
-
-            System.Text.RegularExpressions.Regex _re =
-                new System.Text.RegularExpressions.Regex(@"^
+        private const string RegexExpression = @"^
 (?<PRI>\<\d{1,3}\>)?
 (?<HDR>
   (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s
@@ -28,7 +21,31 @@ namespace SyslogServer
   [^ ]+?\s
 )?
 (?<MSG>.+)
-", System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace
+";
+
+
+        // Rfc3164SyslogMessage.IsRfc3164SyslogMessage
+        public static bool IsRfc3164SyslogMessage(string syslogMessage)
+        {
+            System.Text.RegularExpressions.Regex _re =
+                new System.Text.RegularExpressions.Regex(
+                    RegexExpression
+                    , System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace
+                    | System.Text.RegularExpressions.RegexOptions.Singleline
+                    | System.Text.RegularExpressions.RegexOptions.Compiled
+            );
+
+            System.Text.RegularExpressions.Match m = _re.Match(syslogMessage);
+            return m.Success;
+        }
+
+
+        public static Rfc3164SyslogMessage Parse(string syslogMessage)
+        {
+            Rfc3164SyslogMessage msg = null;
+
+            System.Text.RegularExpressions.Regex _re =
+                new System.Text.RegularExpressions.Regex(RegexExpression, System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace
 | System.Text.RegularExpressions.RegexOptions.Singleline
 | System.Text.RegularExpressions.RegexOptions.Compiled);
 

@@ -18,6 +18,14 @@ namespace SyslogServer
         );
 
 
+        // Rfc5424SyslogMessage.IsRfc5424SyslogMessage(message);
+        public static bool IsRfc5424SyslogMessage(string syslogMessage)
+        {
+            Match match = _Expression.Match(syslogMessage);
+            return match.Success;
+        }
+
+
         public FacilityType Facility
         {
             get

@@ -1,44 +1,50 @@
 ﻿
 namespace SyslogServer
 {
-    using System;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
-    using NetCoreServer;
 
 
     class UpdSyslogServer 
-        : UdpServer
+        : NetCoreServer.UdpServer
     {
-        public UpdSyslogServer(IPAddress address, int port) 
+
+
+        public UpdSyslogServer(System.Net.IPAddress address, int port) 
             : base(address, port) 
         { }
+
 
         protected override void OnStarted()
         {
             // Start receive datagrams
             ReceiveAsync();
-        }
+        } // End Sub OnStarted 
 
-        protected override void OnReceived(EndPoint endpoint, byte[] buffer, long offset, long size)
+
+        protected override void OnReceived(
+              System.Net.EndPoint endpoint
+            , byte[] buffer
+            , long offset
+            , long size)
         {
-            Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size));
+            System.Console.WriteLine("Incoming: " + System.Text.Encoding.UTF8
+                .GetString(buffer, (int)offset, (int)size));
 
             // Echo the message back to the sender
             // SendAsync(endpoint, buffer, 0, size);
-        }
+        } // End Sub OnReceived 
 
-        protected override void OnSent(EndPoint endpoint, long sent)
+
+        protected override void OnSent(System.Net.EndPoint endpoint, long sent)
         {
             // Continue receive datagrams
             ReceiveAsync();
-        }
+        } // End Sub OnSent 
 
-        protected override void OnError(SocketError error)
+
+        protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            Console.WriteLine($"Echo UDP server caught an error with code {error}");
-        }
+            System.Console.WriteLine($"Echo UDP server caught an error with code {error}");
+        } // End Sub OnError 
 
 
         public static void Test()
@@ -46,40 +52,46 @@ namespace SyslogServer
             // UDP server port
             int port = 514;
 
-            Console.WriteLine($"UDP server port: {port}");
+            System.Console.WriteLine($"UDP server port: {port}");
 
-            Console.WriteLine();
+            System.Console.WriteLine();
 
             // Create a new UDP echo server
-            UpdSyslogServer server = new UpdSyslogServer(IPAddress.Any, port);
+            UpdSyslogServer server = 
+                new UpdSyslogServer(System.Net.IPAddress.Any, port);
 
             // Start the server
-            Console.Write("Server starting...");
+            System.Console.Write("Server starting...");
             server.Start();
-            Console.WriteLine("Done!");
+            System.Console.WriteLine("Done!");
 
-            Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
+            System.Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
 
             // Perform text input
             for (; ; )
             {
-                string line = Console.ReadLine();
+                string line = System.Console.ReadLine();
                 if (string.IsNullOrEmpty(line))
                     break;
 
                 // Restart the server
                 if (line == "!")
                 {
-                    Console.Write("Server restarting...");
+                    System.Console.Write("Server restarting...");
                     server.Restart();
-                    Console.WriteLine("Done!");
+                    System.Console.WriteLine("Done!");
                 }
-            }
+
+            } // Next 
 
             // Stop the server
-            Console.Write("Server stopping...");
+            System.Console.Write("Server stopping...");
             server.Stop();
-            Console.WriteLine("Done!");
-        }
-    }
-}
+            System.Console.WriteLine("Done!");
+        } // End Sub Test 
+
+
+    } // End Class UpdSyslogServer 
+
+
+} // End Namespace SyslogServer 

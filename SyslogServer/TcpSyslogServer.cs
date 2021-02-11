@@ -1,38 +1,37 @@
 ﻿
 namespace SyslogServer
 {
-    using System;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
-    using NetCoreServer;
+    
 
     class SyslogTcpSession
-        : TcpSession
+        : NetCoreServer.TcpSession
     {
-        public SyslogTcpSession(TcpServer server) 
+        public SyslogTcpSession(NetCoreServer.TcpServer server) 
             : base(server) 
         { }
 
         protected override void OnConnected()
         {
-            Console.WriteLine($"Syslog TCP session with Id {Id} connected!");
+            System.Console.WriteLine($"Syslog TCP session with Id {Id} connected!");
 
             // Send invite message
             string message = "Hello from Syslog TCP session ! Please send a message or '!' to disconnect the client!";
             SendAsync(message);
-        }
+        } // End Sub OnConnected 
+
 
         protected override void OnDisconnected()
         {
-            Console.WriteLine($"Syslog TCP session with Id {Id} disconnected!");
-        }
+            System.Console.WriteLine($"Syslog TCP session with Id {Id} disconnected!");
+        } // End Sub OnDisconnected 
 
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-            Console.WriteLine("Incoming: " + message);
+            string message = System.Text.Encoding.UTF8
+                .GetString(buffer, (int)offset, (int)size);
+
+            System.Console.WriteLine("Incoming: " + message);
 
             // Multicast message to all connected sessions
             // Server.Multicast(message);
@@ -40,77 +39,92 @@ namespace SyslogServer
             // If the buffer starts with '!' the disconnect the current session
             // if (message == "!")
             Disconnect();
-        }
+        } // End Sub OnReceived 
 
-        protected override void OnError(SocketError error)
+
+        protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            Console.WriteLine($"Syslog TCP session caught an error with code {error}");
-        }
-    }
+            System.Console.WriteLine($"Syslog TCP session caught an error with code {error}");
+        } // End Sub OnError 
+
+
+    } // End Class SyslogTcpSession 
+
 
     class TcpSyslogServer 
-        : TcpServer
+        : NetCoreServer.TcpServer
     {
-        public TcpSyslogServer(IPAddress address, int port) 
+
+
+        public TcpSyslogServer(
+              System.Net.IPAddress address
+            , int port
+        ) 
             : base(address, port) 
         { }
 
-        protected override TcpSession CreateSession() { return new SyslogTcpSession(this); }
 
-        protected override void OnError(SocketError error)
+        protected override NetCoreServer.TcpSession CreateSession() 
+        { 
+            return new SyslogTcpSession(this);
+        } // End Function CreateSession 
+
+
+        protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            Console.WriteLine($"Syslog TCP server caught an error with code {error}");
-        }
-    
+            System.Console.WriteLine($"Syslog TCP server caught an error with code {error}");
+        } // End Sub OnError 
+
 
         public static void Test()
         {
             // TCP server port
             int port = 1468;
 
-            Console.WriteLine($"TCP server port: {port}");
+            System.Console.WriteLine($"TCP server port: {port}");
 
-            Console.WriteLine();
+            System.Console.WriteLine();
 
             // Create a new TCP Syslog server
-            TcpSyslogServer server = new TcpSyslogServer(IPAddress.Any, port);
+            TcpSyslogServer server = 
+                new TcpSyslogServer(System.Net.IPAddress.Any, port);
 
             // Start the server
-            Console.Write("Server starting...");
+            System.Console.Write("Server starting...");
             server.Start();
-            Console.WriteLine("Done!");
+            System.Console.WriteLine("Done!");
 
-            Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
+            System.Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
 
             // Perform text input
             for (; ; )
             {
-                string line = Console.ReadLine();
+                string line = System.Console.ReadLine();
                 if (string.IsNullOrEmpty(line))
                     break;
 
                 // Restart the server
                 if (line == "!")
                 {
-                    Console.Write("Server restarting...");
+                    System.Console.Write("Server restarting...");
                     server.Restart();
-                    Console.WriteLine("Done!");
+                    System.Console.WriteLine("Done!");
                     continue;
-                }
+                } // End if (line == "!") 
 
                 // Multicast admin message to all sessions
                 line = "(admin) " + line;
                 server.Multicast(line);
-            }
+            } // Next 
 
             // Stop the server
-            Console.Write("Server stopping...");
+            System.Console.Write("Server stopping...");
             server.Stop();
-            Console.WriteLine("Done!");
-        }
+            System.Console.WriteLine("Done!");
+        } // End Sub Test  
 
 
-    }
+    } // End Class TcpSyslogServer 
 
 
-}
+} // End Namespace SyslogServer 

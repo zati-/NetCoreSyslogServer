@@ -2,49 +2,43 @@
 namespace SyslogServer
 {
 
-
-    using System;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Security.Authentication;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Text;
-    using NetCoreServer;
-
-
-
     class SyslogTlsSession 
-        : SslSession
+        : NetCoreServer.SslSession
     {
-        public SyslogTlsSession(SslServer server) 
+        public SyslogTlsSession(NetCoreServer.SslServer server) 
             : base(server) 
         { }
 
         protected override void OnConnected()
         {
-            Console.WriteLine($"Syslog SSL session with Id {Id} connected!");
-        }
+            System.Console.WriteLine($"Syslog SSL session with Id {Id} connected!");
+        } // End Sub OnConnected 
+
 
         protected override void OnHandshaked()
         {
-            Console.WriteLine($"Syslog SSL session with Id {Id} handshaked!");
+            System.Console.WriteLine($"Syslog SSL session with Id {Id} handshaked!");
 
             // Send invite message
             string message = "Hello from SSL Syslog! Please send a message or '!' to disconnect the client!";
             Send(message);
-        }
+        } // End Sub OnHandshaked 
+
 
         protected override void OnDisconnected()
         {
-            Console.WriteLine($"Syslog SSL session with Id {Id} disconnected!");
-        }
+            System.Console.WriteLine($"Syslog SSL session with Id {Id} disconnected!");
+        } // End Sub OnDisconnected 
+
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-            Console.WriteLine("Incoming: " + message);
+            string message = System.Text.Encoding.UTF8
+                .GetString(buffer, (int)offset, (int)size);
+            System.Console.WriteLine("Incoming: " + message);
 
             Rfc5424SyslogMessage msg5424 = null;
+            // Rfc5424SyslogMessage.IsRfc5424SyslogMessage(message);
 
             try
             {
@@ -61,16 +55,18 @@ namespace SyslogServer
                     msg5424 = Rfc5424SyslogMessage.Invalid(message);
                 }
 
-            }
+            } // End Try 
             catch (System.Exception ex)
             {
                 msg5424 = Rfc5424SyslogMessage.Invalid(message, ex);
-            }
+            } // End Catch 
 
             msg5424.SetSourceEndpoint(this.Socket.RemoteEndPoint);
             // System.Console.WriteLine(msg5424);
 
             // string foo = "<11>1 2021-02-11T19:18:09.686143+01:00 DESKTOP-L73D2V6 TestApplication 34104 - - ﻿test123";
+
+            // Rfc3164SyslogMessage.IsRfc3164SyslogMessage(rest);
             // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(message);
             // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(rest);
             // System.Console.WriteLine(msg3164);
@@ -82,36 +78,52 @@ namespace SyslogServer
             // If the buffer starts with '!' the disconnect the current session
             if (message == "!")
                 Disconnect();
-        }
 
-        protected override void OnError(SocketError error)
+        } // End Sub OnReceived 
+
+
+        protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            Console.WriteLine($"Syslog SSL session caught an error with code {error}");
-        }
-    }
+            System.Console.WriteLine($"Syslog SSL session caught an error with code {error}");
+        } // End Sub OnError 
+
+
+    } // End Class SyslogTlsSession 
+
 
     class TlsSyslogServer 
-        : SslServer
+        : NetCoreServer.SslServer
     {
-        public TlsSyslogServer(SslContext context, IPAddress address, int port) 
+
+
+        public TlsSyslogServer(
+              NetCoreServer.SslContext context
+            , System.Net.IPAddress address
+            , int port
+        ) 
             : base(context, address, port) 
         { }
 
-        protected override SslSession CreateSession() 
+        protected override NetCoreServer.SslSession CreateSession() 
         { 
-            return new SyslogTlsSession(this); 
-        }
+            return new SyslogTlsSession(this);
+        } // End Function CreateSession 
 
-        protected override void OnError(SocketError error)
+
+        protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            Console.WriteLine($"Syslog SSL server caught an error with code {error}");
+            System.Console.WriteLine($"Syslog SSL server caught an error with code {error}");
         }
 
-        public static bool AllowAnything(object sender, X509Certificate certificate, X509Chain chain
+        public static bool AllowAnything(
+              object sender
+            , System.Security.Cryptography.X509Certificates.X509Certificate certificate
+            , System.Security.Cryptography.X509Certificates.X509Chain chain
             , System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
             return true;
-        }
+        } // End Function AllowAnything 
+
 
         public static void Test()
         {            
@@ -120,64 +132,70 @@ namespace SyslogServer
 
             // SSL server port
             int port = 6514;
-            
-            Console.WriteLine($"SSL server port: {port}");
 
-            Console.WriteLine();
+            System.Console.WriteLine($"SSL server port: {port}");
+
+            System.Console.WriteLine();
 
 
             string[] altNames = SelfSignedCertificate.SelfSigned.GetAlternativeNames(new string[0]);
             byte[] pfx = SelfSignedCertificate.SelfSigned.CreateSelfSignedCertificate(altNames, "");
-            
-            X509Certificate2 cert = new X509Certificate2(pfx,"", 
-                  X509KeyStorageFlags.Exportable
-                // https://github.com/dotnet/runtime/issues/23749
-                // | X509KeyStorageFlags.EphemeralKeySet // Error ! 
+
+            System.Security.Cryptography.X509Certificates.X509Certificate2 cert = 
+                new System.Security.Cryptography.X509Certificates.X509Certificate2(pfx,"",
+                  System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable
+            // https://github.com/dotnet/runtime/issues/23749
+            // | System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.EphemeralKeySet // Error ! 
             );
-            
+
             // Create and prepare a new SSL server context
-            SslContext context = new SslContext(
-                // SslProtocols.Tls
-                // SslProtocols.Tls13
-                SslProtocols.Tls12
+            NetCoreServer.SslContext context = new NetCoreServer.SslContext(
+                // System.Security.Authentication.SslProtocols.Tls
+                // System.Security.Authentication.SslProtocols.Tls13
+                  System.Security.Authentication.SslProtocols.Tls12
                 , cert
             );
 
             // Create a new SSL Syslog server
-            TlsSyslogServer server = new TlsSyslogServer(context, IPAddress.Any, port);
+            TlsSyslogServer server = 
+                new TlsSyslogServer(context, System.Net.IPAddress.Any, port);
 
             // Start the server
-            Console.Write("Server starting...");
+            System.Console.Write("Server starting...");
             server.Start();
-            Console.WriteLine("Done!");
+            System.Console.WriteLine("Done!");
 
-            Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
+            System.Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
 
             // Perform text input
             for (; ; )
             {
-                string line = Console.ReadLine();
+                string line = System.Console.ReadLine();
                 if (string.IsNullOrEmpty(line))
                     break;
 
                 // Restart the server
                 if (line == "!")
                 {
-                    Console.Write("Server restarting...");
+                    System.Console.Write("Server restarting...");
                     server.Restart();
-                    Console.WriteLine("Done!");
+                    System.Console.WriteLine("Done!");
                     continue;
-                }
+                } // End if (line == "!") 
 
                 // Multicast admin message to all sessions
                 line = "(admin) " + line;
                 server.Multicast(line);
-            }
+            } // Next 
 
             // Stop the server
-            Console.Write("Server stopping...");
+            System.Console.Write("Server stopping...");
             server.Stop();
-            Console.WriteLine("Done!");
-        }
-    }
-}
+            System.Console.WriteLine("Done!");
+        } // End Sub Test 
+
+
+    } // End Class TlsSyslogServer 
+
+
+} // End Namespace SyslogServer 
