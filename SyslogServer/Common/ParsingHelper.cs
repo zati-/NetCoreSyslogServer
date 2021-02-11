@@ -6,7 +6,8 @@ namespace SyslogServer
     internal class ParsingHelper 
     {
 
-        private static Message ParseMessage(string syslogMessage)
+
+        public static Message ParseMessage(string syslogMessage)
         {
             Message msg = null;
 

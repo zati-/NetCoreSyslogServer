@@ -43,9 +43,21 @@ namespace SyslogServer
         {
             string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
             Console.WriteLine("Incoming: " + message);
+            int ind = message.IndexOf(' ');
+            if (ind != -1)
+            {
+                string len = message.Substring(0, ind);
+                string rest = message.Substring(ind + 1);
 
+                //string foo = "<11>1 2021-02-11T19:18:09.686143+01:00 DESKTOP-L73D2V6 TestApplication 34104 - - ﻿test123";
+                
+                // Message msg = ParsingHelper.ParseMessage(message);
+                Message msg = ParsingHelper.ParseMessage(rest);
+                System.Console.WriteLine(msg);
+            }
+            
             // Multicast message to all connected sessions
-            Server.Multicast(message);
+            // Server.Multicast(message);
 
             // If the buffer starts with '!' the disconnect the current session
             if (message == "!")
