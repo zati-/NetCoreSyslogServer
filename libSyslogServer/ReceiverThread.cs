@@ -1,8 +1,6 @@
 ﻿
 using System; // System.Console ?
-using System.Net.Sockets;
 using System.Text; // Encoding.ASCII ? 
-
 
 namespace libSyslogServer
 {
@@ -11,43 +9,6 @@ namespace libSyslogServer
     public partial class SyslogServer
     {
 
-
-        public async System.Threading.Tasks.Task TestTCP()
-        {
-            // argument: System.Threading.CancellationToken cancellationToken;
-
-            TcpListener listener = new TcpListener(System.Net.IPAddress.Any, _Settings.UdpPort);
-            listener.Start();
-            // cancellationToken.Register(listener.Stop);
-
-            TcpClient client = await listener.AcceptTcpClientAsync();
-
-            //var clientTask = protocol.HandleClient(client, cancellationToken)
-            // .ContinueWith(antecedent => client.Dispose())
-            // .ContinueWith(antecedent => logger.LogInformation("Client disposed."));
-
-            // https://stackoverflow.com/questions/19750624/how-to-build-a-robust-scalable-async-await-echo-server
-            // https://thiscouldbebetter.wordpress.com/2015/01/13/an-echo-server-and-client-in-c-using-tcplistener-and-tcpclient/
-            NetworkStream stream = client.GetStream();
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(stream, Encoding.ASCII) { AutoFlush = true };
-            System.IO.StreamReader reader = new System.IO.StreamReader(stream, Encoding.ASCII);
-
-            await System.Threading.Tasks.Task.CompletedTask;
-
-            while (true)
-            {
-                string inputLine = "";
-                while (inputLine != null)
-                {
-                    inputLine = reader.ReadLine();
-                    writer.WriteLine("Echoing string: " + inputLine);
-                    Console.WriteLine("Echoing string: " + inputLine);
-                }
-                Console.WriteLine("Server saw disconnect from client.");
-            }
-
-
-        }
 
         static void ReceiverThread()
         {
