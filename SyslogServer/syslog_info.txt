@@ -52,3 +52,81 @@ https://github.com/YallaDotNet/syslog
 http://yalladotnet.github.io/syslog/html/7b08f132-b375-4232-94b9-6df3585c206e.htm
 https://github.com/ststeiger/SyslogSharp
 http://syslogsharp.sourceforge.net/
+
+
+
+https://www.alibabacloud.com/help/doc-detail/135042.htm
+Two Syslog protocols are commonly used in the industry: 
+RFC 5424 issued in 2009 and RFC 3164 issued in 2001. 
+This section describes the differences between the two protocols 
+
+
+=============================================================================
+RFC 5424
+Syslog messages that use the RFC 5424 protocol contain the following fields. 
+For more information, see RFC 5424 - The Syslog Protocol.
+PRI VERSION SP TIMESTAMP SP HOSTNAME SP APP-NAME SP PROCID SP MSGID
+=============================================================================
+
+The following examples describe these fields:
+"""
+Example1:
+<34>1 2019-07-11T22:14:15.003Z aliyun.example.com ali - ID47 - BOM'su root' failed for lonvick on /dev/pts/8
+"""
+PRI -- 34
+VERSION -- 1
+TIMESTAMP -- 2019-07-11T22:14:15.003Z
+HOSTNAME -- aliyun.example.com
+APP-NAME -- ali
+PROCID -- None
+MSGID -- ID47
+MESSAGE -- 'su root' failed for lonvick on /dev/pts/8
+"""
+Example2:
+<165>1 2019-07-11T22:14:15.000003-07:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts.
+"""
+PRI -- 165
+VERSION -- 1
+TIMESTAMP -- 2019-07-11T05:14:15.000003-07:00
+HOSTNAME -- 192.0.2.1
+APP-NAME -- myproc
+PROCID -- 8710
+STRUCTURED-DATA -- "-"
+MSGID -- "-"
+MESSAGE -- "%% It's time to make the do-nuts."
+"""
+Example3: - with STRUCTURED-DATA
+<165>1 2019-07-11T22:14:15.003Z aliyun.example.com
+           evntslog - ID47 [exampleSDID@32473 iut="3" eventSource=
+           "Application" eventID="1011"] BOMAn application
+           event log entry...
+"""
+PRI -- 165
+VERSION -- 1
+TIMESTAMP -- 2019-07-11T22:14:15.003Z
+HOSTNAME -- aliyun.example.com
+APP-NAME -- evntslog
+PROCID -- "-"
+MSGID -- ID47
+STRUCTURED-DATA -- [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"]
+MESSAGE -- An application event log entry...
+
+
+=============================================================================
+RFC 3164
+Syslog messages that use the RFC 3164 protocol contain the following fields. 
+For more information, see RFC 3164 - The BSD Syslog Protocol.
+PRI HEADER[TIME HOSTNAME] MSG
+=============================================================================
+
+The following example describes these fields:
+"""
+<30>Oct 9 22:33:20 hlfedora auditd[1787]: The audit daemon is exiting.
+"""
+PRI -- 30
+HEADER
+- TIME -- Oct 9 22:33:20
+- HOSTNAME -- hlfedora
+MSG
+- TAG -- auditd[1787]
+- Content --The audit daemon is exiting.

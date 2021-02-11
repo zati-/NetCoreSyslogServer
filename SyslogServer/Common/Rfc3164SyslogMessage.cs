@@ -2,14 +2,21 @@
 namespace SyslogServer
 {
 
-
-    internal class WrongParsingHelper 
+    public class Rfc3164SyslogMessage 
     {
+        public FacilityType Facility { get; set; }
+        public SeverityType Severity { get; set; }
+        public System.DateTime Datestamp { get; set; }
+        public string Hostname { get; set; }
+        public string Content { get; set; }
+        public string RemoteIP { get; set; }
+        public System.DateTime LocalDate { get; set; }
 
 
-        public static Message ParseMessage(string syslogMessage)
+
+        public static Rfc3164SyslogMessage Parse(string syslogMessage)
         {
-            Message msg = null;
+            Rfc3164SyslogMessage msg = null;
 
             System.Text.RegularExpressions.Regex _re =
                 new System.Text.RegularExpressions.Regex(@"^
@@ -31,7 +38,7 @@ namespace SyslogServer
                 return msg;
 
 
-            msg = new Message();
+            msg = new Rfc3164SyslogMessage();
 
             if (m.Groups["PRI"].Success)
             {
@@ -78,7 +85,7 @@ namespace SyslogServer
         } // End Function ParseMessage 
 
 
-    } // End Class ParsingHelper 
+    }
 
 
 }

@@ -43,8 +43,8 @@ namespace SyslogServer
         {
             string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
             Console.WriteLine("Incoming: " + message);
-            
-            SyslogMessage msg = null;
+
+            Rfc5424SyslogMessage msg5424 = null;
 
             try
             {
@@ -54,26 +54,26 @@ namespace SyslogServer
                 {
                     // string len = message.Substring(0, ind);
                     string rest = message.Substring(ind + 1);
-                    msg = SyslogMessage.Parse(rest);
+                    msg5424 = Rfc5424SyslogMessage.Parse(rest);
                 }
                 else
                 {
-                    msg = SyslogMessage.Invalid(message);
+                    msg5424 = Rfc5424SyslogMessage.Invalid(message);
                 }
 
             }
             catch (System.Exception ex)
             {
-                msg = SyslogMessage.Invalid(message, ex);
+                msg5424 = Rfc5424SyslogMessage.Invalid(message, ex);
             }
 
-            msg.SetSourceEndpoint(this.Socket.RemoteEndPoint);
-            System.Console.WriteLine(msg);
+            msg5424.SetSourceEndpoint(this.Socket.RemoteEndPoint);
+            // System.Console.WriteLine(msg5424);
 
             // string foo = "<11>1 2021-02-11T19:18:09.686143+01:00 DESKTOP-L73D2V6 TestApplication 34104 - - ﻿test123";
-            // Message msg = WrongParsingHelper.ParseMessage(message);
-            // Message msg = WrongParsingHelper.ParseMessage(rest);
-            // System.Console.WriteLine(msg);
+            // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(message);
+            // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(rest);
+            // System.Console.WriteLine(msg3164);
 
 
             // Multicast message to all connected sessions

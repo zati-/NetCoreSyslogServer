@@ -7,7 +7,7 @@ namespace SyslogServer
 
 
     // https://stackoverflow.com/a/53617099/155077
-    public class SyslogMessage
+    public class Rfc5424SyslogMessage
     {
         private static readonly string _SyslogMsgHeaderPattern = @"\<(?<PRIVAL>\d{1,3})\>(?<VERSION>[1-9]{0,2}) (?<TIMESTAMP>(\S|\w)+) (?<HOSTNAME>-|(\S|\w){1,255}) (?<APPNAME>-|(\S|\w){1,48}) (?<PROCID>-|(\S|\w){1,128}) (?<MSGID>-|(\S|\w){1,32})";
         private static readonly string _SyslogMsgStructuredDataPattern = @"(?<STRUCTUREDDATA>-|\[[^\[\=\x22\]\x20]{1,32}( ([^\[\=\x22\]\x20]{1,32}=\x22.+\x22))?\])";
@@ -59,9 +59,9 @@ namespace SyslogServer
         public System.DateTime MessageReceivedTime { get; private set; }
 
 
-        public static SyslogMessage Invalid(string rawMessage, System.Exception ex)
+        public static Rfc5424SyslogMessage Invalid(string rawMessage, System.Exception ex)
         {
-            return new SyslogMessage
+            return new Rfc5424SyslogMessage
             {
                 RawMessage = rawMessage,
                 IsValid = false,
@@ -88,7 +88,7 @@ namespace SyslogServer
             }
         }
 
-        public static SyslogMessage Invalid(string rawMessage)
+        public static Rfc5424SyslogMessage Invalid(string rawMessage)
         {
             return Invalid(rawMessage, null);
         }
@@ -102,7 +102,7 @@ namespace SyslogServer
         /// <exception cref="OverflowException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static SyslogMessage Parse(string rawMessage)
+        public static Rfc5424SyslogMessage Parse(string rawMessage)
         {
             if (string.IsNullOrWhiteSpace(rawMessage))
             {
@@ -112,7 +112,7 @@ namespace SyslogServer
             Match match = _Expression.Match(rawMessage);
             if (match.Success)
             {
-                return new SyslogMessage
+                return new Rfc5424SyslogMessage
                 {
                     MessageReceivedTime = System.DateTime.UtcNow,
                     Prival = System.Convert.ToInt32(match.Groups["PRIVAL"].Value),
