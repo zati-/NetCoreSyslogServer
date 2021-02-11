@@ -36,3 +36,11 @@ UDP doesn't give an error !
 
 receivedData = Encoding.ASCII.GetString(receivedBytes, 0, receivedBytes.Length);
    
+https://labs.rebex.net/syslog
+https://sflanders.net/2018/08/22/syslog-and-what-protocol-to-send-events-over/
+https://github.com/chronoxor/NetCoreServer#example-ssl-chat-client
+https://stackify.com/syslog-101
+http://web.archive.org/web/20201205213311/https://sflanders.net/2018/08/22/syslog-and-what-protocol-to-send-events-over/
+
+https://github.com/jchristn/WatsonSyslogServer
+https://github.com/emertechie/SyslogNet
