@@ -44,3 +44,11 @@ http://web.archive.org/web/20201205213311/https://sflanders.net/2018/08/22/syslo
 
 https://github.com/jchristn/WatsonSyslogServer
 https://github.com/emertechie/SyslogNet
+https://gunnarpeipman.com/aspnet-core-syslog/
+https://github.com/mguinness/syslogserver
+https://github.com/mguinness/syslog-framework-logging
+
+https://github.com/YallaDotNet/syslog
+http://yalladotnet.github.io/syslog/html/7b08f132-b375-4232-94b9-6df3585c206e.htm
+https://github.com/ststeiger/SyslogSharp
+http://syslogsharp.sourceforge.net/
