@@ -2,7 +2,7 @@
 namespace SyslogServer
 {
 
-    public class Message
+    internal class Message
     {
         public FacilityType Facility { get; set; }
         public SeverityType Severity { get; set; }

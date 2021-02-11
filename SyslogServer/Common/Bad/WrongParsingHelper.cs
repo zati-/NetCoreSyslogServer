@@ -3,7 +3,7 @@ namespace SyslogServer
 {
 
 
-    internal class ParsingHelper 
+    internal class WrongParsingHelper 
     {
 
 
