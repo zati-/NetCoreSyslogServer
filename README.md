@@ -6,9 +6,10 @@
 
 ## Watson Syslog Server
 
-This project is based on Watson Syslog Server. 
-Moved Watson Syslog Server to libSyslogServer for reference. 
-Watson Syslog Server will automatically start using a default configuration listening on UDP/514 and storing log files in the ```logs\``` directory.  If you wish to change this, create a file called ```syslog.json``` with the following structure:
+This project is based on Watson Syslog Server. <br />
+Moved Watson Syslog Server to libSyslogServer for reference.  <br />
+Watson Syslog Server will automatically start using a default configuration listening on UDP/514 and storing log files in the ```logs\``` directory.  <br />
+If you wish to change this, create a file called ```syslog.json``` with the following structure:
 ```
 {
   "Version": "Watson Syslog Server v1.0.0",
@@ -27,7 +28,7 @@ Build/compile and run the binary.
 
 ## Running under Windows Linux and MacOS
 
-This application should work well in all NetCore environments. 
+This application should work well in all NetCore environments. <br />
 Tested on: 
  - Windows 10 
  - Linux (Ubuntu 20.04 LTS "Focal Fossa" x64)
@@ -37,7 +38,7 @@ Tested on:
 
 ## Running under Mono
 
-This app should work well in Mono environments.  
+This app should work well in Mono environments.<br />  
 It is recommended that when running under Mono, you execute the containing EXE using --server and after using the Mono Ahead-of-Time Compiler (AOT).
 ```
 mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server myapp.exe
