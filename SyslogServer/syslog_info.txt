@@ -1,0 +1,38 @@
+﻿
+https://tools.ietf.org/html/rfc6587
+https://tools.ietf.org/html/rfc5426
+https://tools.ietf.org/html/rfc5424
+https://tools.ietf.org/html/rfc3164
+
+
+RFC 5425 - TLS for Syslog is not supported yet
+
+
+RFC 6587 Transmission of Syslog Messages over TCP
+RFC 5426 Transmission of Syslog Messages over UDP
+RFC 5424 The Syslog Protocol - Obsoletes: RFC 3164  
+RFC 3164 - The BSD syslog Protocol - Obsoleted by RFC 5424
+YOU SHOULD NO LONGER FOLLOW RFC 3164 except for legacy reasons (i.e. backwards compatibility).
+
+
+
+
+
+
+
+RFC5424 removed the requirement of using only UDP for log sending, 
+but still mandates UDP be supported (for at least backwards compatibility).
+
+One option available starting with RFC 5424 is TCP.
+
+To guarantee message delivery, right? 
+WRONG! TCP DOES NOT GUARANTEE MESSAGE DELIVERY. 
+VERY IMPORTANT: Message receipt acknowledgment (i.e. TCP handshake) != guaranteed message delivery
+
+But one knows that the server is up and running 
+UDP doesn't give an error ! 
+
+
+
+receivedData = Encoding.ASCII.GetString(receivedBytes, 0, receivedBytes.Length);
+   

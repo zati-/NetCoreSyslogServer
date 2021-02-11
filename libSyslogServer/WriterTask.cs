@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
+﻿
+using System;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
 
-namespace WatsonSyslog
+
+namespace libSyslogServer
 {
+
+
     public partial class SyslogServer
     {
         static void WriterTask()
@@ -21,49 +18,51 @@ namespace WatsonSyslog
                 {
                     Task.Delay(1000).Wait();
 
-                    if (DateTime.Compare(_LastWritten.AddSeconds(_Settings.LogWriterIntervalSec), DateTime.Now) < 0)
+                    if (System.DateTime.Compare(_LastWritten.AddSeconds(_Settings.LogWriterIntervalSec), System.DateTime.Now) < 0)
                     {
                         lock (_WriterLock)
                         {
                             if (_MessageQueue == null || _MessageQueue.Count < 1)
                             {
-                                _LastWritten = DateTime.Now;
+                                _LastWritten = System.DateTime.Now;
                                 continue;
                             }
                              
                             foreach (string currMessage in _MessageQueue)
                             { 
-                                string currFilename = _Settings.LogFileDirectory + DateTime.Now.ToString("MMddyyyy") + "-" + _Settings.LogFilename;
+                                string currFilename = _Settings.LogFileDirectory + System.DateTime.Now.ToString("MMddyyyy") + "-" + _Settings.LogFilename;
                                  
-                                if (!File.Exists(currFilename))
+                                if (!System.IO.File.Exists(currFilename))
                                 {
-                                    Console.WriteLine("Creating file: " + currFilename + Environment.NewLine);
+                                    Console.WriteLine("Creating file: " + currFilename + System.Environment.NewLine);
                                     {
-                                        using (FileStream fsCreate = File.Create(currFilename))
+                                        using (System.IO.FileStream fsCreate = 
+                                            System.IO.File.Create(currFilename))
                                         {
-                                            Byte[] createData = new UTF8Encoding(true).GetBytes("--- Creating log file at " + DateTime.Now + " ---" + Environment.NewLine);
+                                            byte[] createData = new UTF8Encoding(true).GetBytes("--- Creating log file at " + System.DateTime.Now + " ---" + System.Environment.NewLine);
                                             fsCreate.Write(createData, 0, createData.Length);
                                         }
                                     }
                                 }
                                  
-                                using (StreamWriter swAppend = File.AppendText(currFilename))
+                                using (System.IO.StreamWriter swAppend = 
+                                    System.IO.File.AppendText(currFilename))
                                 {
                                     swAppend.WriteLine(currMessage);
                                 } 
                             }
 
-                            _LastWritten = DateTime.Now;
-                            _MessageQueue = new List<string>();
+                            _LastWritten = System.DateTime.Now;
+                            _MessageQueue = new System.Collections.Generic.List<string>();
                         } 
                     } 
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Console.WriteLine("***");
                 Console.WriteLine("WriterTask exiting due to exception: " + e.Message);
-                Environment.Exit(-1);
+                System.Environment.Exit(-1);
             }
         }
     }
