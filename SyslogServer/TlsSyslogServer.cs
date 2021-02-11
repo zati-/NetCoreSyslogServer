@@ -105,8 +105,9 @@ namespace SyslogServer
             
             // Create and prepare a new SSL server context
             SslContext context = new SslContext(
-                  SslProtocols.Tls12
                 // SslProtocols.Tls
+                // SslProtocols.Tls13
+                SslProtocols.Tls12
                 , cert
             );
 
