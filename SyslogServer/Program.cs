@@ -14,8 +14,8 @@ namespace SyslogServer
             // https://chronoxor.github.io/NetCoreServer/
 
             // UpdSyslogServer.Test();
-            TlsSyslogServer.Test();
-            // TcpSyslogServer.Test();
+            // TlsSyslogServer.Test();
+            TcpSyslogServer.Test();
 
             // libSyslogServer.SyslogServer.StartServer();
         } // End Sub Main 

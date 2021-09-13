@@ -33,12 +33,17 @@ namespace SyslogServer
 
             System.Console.WriteLine("Incoming: " + message);
 
+            // 	p = ((int)facility * 8) + (int)severity;
+            // ==> severity = p % 8 
+            // ==> faciliy = p \ 8 
+
+
             // Multicast message to all connected sessions
             // Server.Multicast(message);
 
             // If the buffer starts with '!' the disconnect the current session
             // if (message == "!")
-            Disconnect();
+            // Disconnect();
         } // End Sub OnReceived 
 
 
