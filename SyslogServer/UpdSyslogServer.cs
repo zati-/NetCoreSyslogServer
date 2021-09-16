@@ -3,14 +3,18 @@ namespace SyslogServer
 {
 
 
-    class UpdSyslogServer 
+    public class UpdSyslogServer 
         : NetCoreServer.UdpServer
     {
 
+        protected MessageHandler m_messageHandler;
 
-        public UpdSyslogServer(System.Net.IPAddress address, int port) 
+
+        public UpdSyslogServer(System.Net.IPAddress address, int port, MessageHandler handler) 
             : base(address, port) 
-        { }
+        {
+            this.m_messageHandler = handler;
+        }
 
 
         protected override void OnStarted()
@@ -26,8 +30,9 @@ namespace SyslogServer
             , long offset
             , long size)
         {
-            System.Console.WriteLine("Incoming: " + System.Text.Encoding.UTF8
-                .GetString(buffer, (int)offset, (int)size));
+            System.Console.WriteLine("Incoming: " + System.Text.Encoding.UTF8.GetString(buffer, (int)offset, (int)size));
+            this.m_messageHandler.OnReceived(endpoint, buffer, offset, size);
+
 
             // Echo the message back to the sender
             // SendAsync(endpoint, buffer, 0, size);
@@ -43,7 +48,8 @@ namespace SyslogServer
 
         protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            System.Console.WriteLine($"Echo UDP server caught an error with code {error}");
+            // System.Console.WriteLine($"Echo UDP server caught an error with code {error}");
+            this.m_messageHandler.OnError(error);
         } // End Sub OnError 
 
 
@@ -58,7 +64,7 @@ namespace SyslogServer
 
             // Create a new UDP echo server
             UpdSyslogServer server = 
-                new UpdSyslogServer(System.Net.IPAddress.Any, port);
+                new UpdSyslogServer(System.Net.IPAddress.Any, port, MessageHandler.CreateInstance(123, port));
 
             // Start the server
             System.Console.Write("Server starting...");

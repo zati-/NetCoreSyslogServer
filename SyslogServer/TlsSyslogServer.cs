@@ -2,10 +2,12 @@
 namespace SyslogServer
 {
 
-    class SyslogTlsSession 
+    public class SyslogTlsSession 
         : NetCoreServer.SslSession
     {
-        public SyslogTlsSession(NetCoreServer.SslServer server) 
+        protected MessageHandler m_messageHandler;
+
+        public SyslogTlsSession(NetCoreServer.SslServer server, MessageHandler handler) 
             : base(server) 
         { }
 
@@ -20,8 +22,8 @@ namespace SyslogServer
             System.Console.WriteLine($"Syslog SSL session with Id {Id} handshaked!");
 
             // Send invite message
-            string message = "Hello from SSL Syslog! Please send a message or '!' to disconnect the client!";
-            Send(message);
+            // string message = "Hello from SSL Syslog! Please send a message or '!' to disconnect the client!";
+            // Send(message);
         } // End Sub OnHandshaked 
 
 
@@ -33,80 +35,50 @@ namespace SyslogServer
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            string message = System.Text.Encoding.UTF8
-                .GetString(buffer, (int)offset, (int)size);
-            System.Console.WriteLine("Incoming: " + message);
-
-            Rfc5424SyslogMessage msg5424 = null;
-            // Rfc5424SyslogMessage.IsRfc5424SyslogMessage(message);
-
-            try
-            {
-                int ind = message.IndexOf(' ');
-
-                if (ind != -1)
-                {
-                    // string len = message.Substring(0, ind);
-                    string rest = message.Substring(ind + 1);
-                    msg5424 = Rfc5424SyslogMessage.Parse(rest);
-                }
-                else
-                {
-                    msg5424 = Rfc5424SyslogMessage.Invalid(message);
-                }
-
-            } // End Try 
-            catch (System.Exception ex)
-            {
-                msg5424 = Rfc5424SyslogMessage.Invalid(message, ex);
-            } // End Catch 
-
-            msg5424.SetSourceEndpoint(this.Socket.RemoteEndPoint);
-            // System.Console.WriteLine(msg5424);
-
-            // string foo = "<11>1 2021-02-11T19:18:09.686143+01:00 DESKTOP-L73D2V6 TestApplication 34104 - - ﻿test123";
-
-            // Rfc3164SyslogMessage.IsRfc3164SyslogMessage(rest);
-            // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(message);
-            // Rfc3164SyslogMessage msg3164 = Rfc3164SyslogMessage.Parse(rest);
-            // System.Console.WriteLine(msg3164);
-
+            // string message = System.Text.Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
+            // System.Console.WriteLine("Incoming: " + message);
+            this.m_messageHandler.OnReceived(this.Socket.RemoteEndPoint, buffer, offset, size);
 
             // Multicast message to all connected sessions
             // Server.Multicast(message);
 
             // If the buffer starts with '!' the disconnect the current session
-            if (message == "!")
-                Disconnect();
+            // if (message == "!") Disconnect();
 
         } // End Sub OnReceived 
 
 
         protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            System.Console.WriteLine($"Syslog SSL session caught an error with code {error}");
+            // System.Console.WriteLine($"Syslog SSL session caught an error with code {error}");
+            this.m_messageHandler.OnError(error);
         } // End Sub OnError 
 
 
     } // End Class SyslogTlsSession 
 
 
-    class TlsSyslogServer 
+    public class TlsSyslogServer 
         : NetCoreServer.SslServer
     {
+
+        protected MessageHandler m_messageHandler;
 
 
         public TlsSyslogServer(
               NetCoreServer.SslContext context
             , System.Net.IPAddress address
             , int port
+            , MessageHandler handler
         ) 
             : base(context, address, port) 
-        { }
+        {
+            this.m_messageHandler = handler;
+        }
 
         protected override NetCoreServer.SslSession CreateSession() 
         { 
-            return new SyslogTlsSession(this);
+            return new SyslogTlsSession(this, this.m_messageHandler);
         } // End Function CreateSession 
 
 
@@ -158,7 +130,7 @@ namespace SyslogServer
 
             // Create a new SSL Syslog server
             TlsSyslogServer server = 
-                new TlsSyslogServer(context, System.Net.IPAddress.Any, port);
+                new TlsSyslogServer(context, System.Net.IPAddress.Any, port,  MessageHandler.CreateInstance(123, port));
 
             // Start the server
             System.Console.Write("Server starting...");

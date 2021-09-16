@@ -1,14 +1,18 @@
 ﻿
 namespace SyslogServer
 {
-    
 
-    class SyslogTcpSession
+
+    public class SyslogTcpSession
         : NetCoreServer.TcpSession
     {
-        public SyslogTcpSession(NetCoreServer.TcpServer server) 
+        protected MessageHandler m_messageHandler;
+
+        public SyslogTcpSession(NetCoreServer.TcpServer server, MessageHandler handler) 
             : base(server) 
-        { }
+        {
+            this.m_messageHandler = handler;
+        }
 
         protected override void OnConnected()
         {
@@ -26,17 +30,12 @@ namespace SyslogServer
         } // End Sub OnDisconnected 
 
 
+
+
+
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            string message = System.Text.Encoding.UTF8
-                .GetString(buffer, (int)offset, (int)size);
-
-            System.Console.WriteLine("Incoming: " + message);
-
-            // 	p = ((int)facility * 8) + (int)severity;
-            // ==> severity = p % 8 
-            // ==> faciliy = p \ 8 
-
+            this.m_messageHandler.OnReceived(this.Socket.RemoteEndPoint, buffer, offset, size);
 
             // Multicast message to all connected sessions
             // Server.Multicast(message);
@@ -44,40 +43,46 @@ namespace SyslogServer
             // If the buffer starts with '!' the disconnect the current session
             // if (message == "!")
             // Disconnect();
+
         } // End Sub OnReceived 
 
 
         protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            System.Console.WriteLine($"Syslog TCP session caught an error with code {error}");
+            // System.Console.WriteLine($"Syslog TCP session caught an error with code {error}");
+            this.m_messageHandler.OnError(error);
         } // End Sub OnError 
 
 
     } // End Class SyslogTcpSession 
 
 
-    class TcpSyslogServer 
+    public class TcpSyslogServer 
         : NetCoreServer.TcpServer
     {
-
+        protected MessageHandler m_messageHandler;
 
         public TcpSyslogServer(
               System.Net.IPAddress address
             , int port
+            ,MessageHandler handler 
         ) 
             : base(address, port) 
-        { }
+        {
+            this.m_messageHandler = handler;
+        }
 
 
         protected override NetCoreServer.TcpSession CreateSession() 
         { 
-            return new SyslogTcpSession(this);
+            return new SyslogTcpSession(this, this.m_messageHandler);
         } // End Function CreateSession 
 
 
         protected override void OnError(System.Net.Sockets.SocketError error)
         {
-            System.Console.WriteLine($"Syslog TCP server caught an error with code {error}");
+            // System.Console.WriteLine($"Syslog TCP server caught an error with code {error}");
+            this.m_messageHandler.OnError(error);
         } // End Sub OnError 
 
 
@@ -92,7 +97,7 @@ namespace SyslogServer
 
             // Create a new TCP Syslog server
             TcpSyslogServer server = 
-                new TcpSyslogServer(System.Net.IPAddress.Any, port);
+                new TcpSyslogServer(System.Net.IPAddress.Any, port, MessageHandler.CreateInstance(123, port));
 
             // Start the server
             System.Console.Write("Server starting...");

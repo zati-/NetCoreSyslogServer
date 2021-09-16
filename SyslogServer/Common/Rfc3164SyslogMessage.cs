@@ -54,7 +54,6 @@ namespace SyslogServer
             if (!m.Success)
                 return msg;
 
-
             msg = new Rfc3164SyslogMessage();
 
             if (m.Groups["PRI"].Success)
@@ -98,8 +97,30 @@ namespace SyslogServer
 
             // if (MessageReceived != null) MessageReceived(msg);
 
+            msg.IsValid = true;
+            msg.RawMessage = syslogMessage;
+            msg.MessageReceivedTime = System.DateTime.UtcNow;
+
             return msg;
         } // End Function ParseMessage 
+
+
+        public string RawMessage { get; private set; }
+        public System.Exception Exception { get; private set; }
+        public bool IsValid { get; private set; }
+        public System.DateTime MessageReceivedTime { get; private set; }
+        
+
+        public static Rfc3164SyslogMessage Invalid(string rawMessage, System.Exception ex)
+        {
+            return new Rfc3164SyslogMessage
+            {
+                RawMessage = rawMessage,
+                IsValid = false,
+                MessageReceivedTime = System.DateTime.UtcNow,
+                Exception = ex
+            };
+        }
 
 
     }
