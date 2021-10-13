@@ -36,15 +36,20 @@ namespace SelfSignedCertificate
             }
             else
             {
-                string keyPath = System.IO.Path.Combine("Software", "COR");
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath, true))
-                {
-                    using (Microsoft.Win32.RegistryKey asmKey = key.CreateSubKey(asmName, true))
-                    {
-                        asmKey.SetValue(secretName, txtValue, Microsoft.Win32.RegistryValueKind.String);
-                    } // End Using asmKey 
+                    string keyPath = System.IO.Path.Combine("Software", "COR");
 
-                } // End Using key 
+                    
+                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey(keyPath);
+
+                    using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath, true))
+                    {
+                        using (Microsoft.Win32.RegistryKey asmKey = key.CreateSubKey(asmName, true))
+                        {
+                            asmKey.SetValue(secretName, txtValue, Microsoft.Win32.RegistryValueKind.String);
+                        } // End Using asmKey 
+
+                    } // End Using key 
+
             } // End Else 
 
         } // End Function SetSecret 
@@ -126,8 +131,19 @@ namespace SelfSignedCertificate
             // HKEY_CURRENT_USER
 
             //using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine
-            using (Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.CurrentUser
-                .OpenSubKey(key))
+            using (Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(key))
+            {
+                if (regKey != null)
+                {
+                    objReturnValue = regKey.GetValue(value);
+                } // End if (regKey != null) 
+
+            } // End Using regKey 
+
+            if (objReturnValue != null)
+                return objReturnValue;
+
+            using (Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(key))
             {
                 if (regKey != null)
                 {
