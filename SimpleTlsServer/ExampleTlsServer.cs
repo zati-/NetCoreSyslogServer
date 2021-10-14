@@ -187,11 +187,15 @@ namespace SimpleTlsServer
                     System.Console.WriteLine("Client connected");
                     // SslStream stream = new SslStream(socket.GetStream());
                     // NoValidateServerCertificate
+                    // https://stackoverflow.com/questions/57399520/set-sni-in-a-client-for-a-streamsocket-or-sslstream
+                    // https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml
                     // SslStream stream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate))
                     // SslStream stream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(NoValidateServerCertificate) ,new LocalCertificateSelectionCallback(My))
 
 
-#if true   
+                    // ((System.Net.IPEndPoint)socket.Client.RemoteEndPoint).Address.ToString();
+
+#if true
                     StreamExtended.DefaultBufferPool bufferPool = new StreamExtended.DefaultBufferPool();
 
                     StreamExtended.Network.CustomBufferedStream yourClientStream = 
@@ -219,8 +223,9 @@ namespace SimpleTlsServer
                         WriteTimeout = IOTimeout
                     };
 
-                    
-                    
+                    // System.Net.Security.SslStream stream;
+                    // .NET 5.0 only stream.TargetHostName
+
 
                     // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-5.0
                     // System.Net.Security.ServerCertificateSelectionCallback
