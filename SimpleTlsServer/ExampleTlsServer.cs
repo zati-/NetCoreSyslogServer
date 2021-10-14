@@ -16,8 +16,8 @@ namespace SimpleTlsServer
 
         public static void Test()
         {
-            // System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls13;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            // System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls13;
 
 
             System.Security.Cryptography.X509Certificates.X509Store store = 
@@ -195,7 +195,7 @@ namespace SimpleTlsServer
 
                     // ((System.Net.IPEndPoint)socket.Client.RemoteEndPoint).Address.ToString();
 
-#if true
+#if true 
                     StreamExtended.DefaultBufferPool bufferPool = new StreamExtended.DefaultBufferPool();
 
                     StreamExtended.Network.CustomBufferedStream yourClientStream = 
@@ -215,7 +215,7 @@ namespace SimpleTlsServer
 #else
                     System.Net.Sockets.NetworkStream yourClientStream = socket.GetStream();
 #endif
-
+                    
                     System.Net.Security.SslStream stream = new System.Net.Security.SslStream(yourClientStream, false
                         , new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate))
                     {
@@ -230,9 +230,10 @@ namespace SimpleTlsServer
                     // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-5.0
                     // System.Net.Security.ServerCertificateSelectionCallback
                     // System.Net.Security.SslServerAuthenticationOptions
-
-
+                    System.Console.WriteLine(stream.TargetHostName);
                     await stream.AuthenticateAsServerAsync(cert);
+                    System.Console.WriteLine(stream.TargetHostName);
+
                     while (true)
                     {
                         //NetworkStream stream= socket.GetStream();
