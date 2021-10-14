@@ -82,10 +82,10 @@ namespace SimpleTlsServer
                     ReadTimeout = IOTimeout,
                     WriteTimeout = IOTimeout
                 };
-
+                
                 // stream.AuthenticateAsClient(connectTo, null, true);
-                // stream.AuthenticateAsClient(connectTo, certs, System.Security.Authentication.SslProtocols.Tls12, false);
-                stream.AuthenticateAsClient(connectTo, null, System.Security.Authentication.SslProtocols.Tls12, true);
+                stream.AuthenticateAsClient(connectTo, certs, System.Security.Authentication.SslProtocols.Tls12, true);
+                // stream.AuthenticateAsClient(connectTo, certs, System.Security.Authentication.SslProtocols.Tls13, true);
 
 
                 // This is where you read and send data
@@ -195,7 +195,7 @@ namespace SimpleTlsServer
 
                     // ((System.Net.IPEndPoint)socket.Client.RemoteEndPoint).Address.ToString();
 
-#if true 
+#if false  
                     StreamExtended.DefaultBufferPool bufferPool = new StreamExtended.DefaultBufferPool();
 
                     StreamExtended.Network.CustomBufferedStream yourClientStream = 
@@ -226,13 +226,28 @@ namespace SimpleTlsServer
                     // System.Net.Security.SslStream stream;
                     // .NET 5.0 only stream.TargetHostName
 
+                    // Specifying a delegate instead of directly providing the certificate works
+                    System.Net.Security.SslServerAuthenticationOptions sslOptions = 
+                        new System.Net.Security.SslServerAuthenticationOptions
+                    {
+                        // ServerCertificate = certificate,
+                        ServerCertificateSelectionCallback = (sender, name) => cert ,
+                        CertificateRevocationCheckMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Offline,
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                    };
+                    stream.AuthenticateAsServer(sslOptions);
+
+                    // new System.Net.Security.SslStream(null, true, null,null, )
+
 
                     // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-5.0
                     // System.Net.Security.ServerCertificateSelectionCallback
                     // System.Net.Security.SslServerAuthenticationOptions
                     System.Console.WriteLine(stream.TargetHostName);
-                    await stream.AuthenticateAsServerAsync(cert);
-                    System.Console.WriteLine(stream.TargetHostName);
+                    // await stream.AuthenticateAsServerAsync(cert);
+                    // await stream.AuthenticateAsServerAsync(cert, false, System.Security.Authentication.SslProtocols.Tls13, true);
+
+                    // System.Console.WriteLine(stream.TargetHostName);
 
                     while (true)
                     {
