@@ -16,8 +16,9 @@ namespace SimpleTlsServer
 
         public static void Test()
         {
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-            
+            // System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls13;
+
 
             System.Security.Cryptography.X509Certificates.X509Store store = 
                 new System.Security.Cryptography.X509Certificates.X509Store(
@@ -82,8 +83,9 @@ namespace SimpleTlsServer
                     WriteTimeout = IOTimeout
                 };
 
-                stream.AuthenticateAsClient(connectTo, null, true);
+                // stream.AuthenticateAsClient(connectTo, null, true);
                 // stream.AuthenticateAsClient(connectTo, certs, System.Security.Authentication.SslProtocols.Tls12, false);
+                stream.AuthenticateAsClient(connectTo, null, System.Security.Authentication.SslProtocols.Tls12, true);
 
 
                 // This is where you read and send data
@@ -188,11 +190,15 @@ namespace SimpleTlsServer
                     // SslStream stream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate))
                     // SslStream stream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(NoValidateServerCertificate) ,new LocalCertificateSelectionCallback(My))
 
-                    var ps = socket.GetStream();
-                    var bufferSize = 4096;
-                    var bufferPool = new StreamExtended.DefaultBufferPool();
-                    var yourClientStream = new StreamExtended.Network.CustomBufferedStream(ps, bufferPool, bufferSize);
-                    var clientSslHelloInfo = await StreamExtended.SslTools.PeekClientHello(yourClientStream, bufferPool);
+
+#if true   
+                    StreamExtended.DefaultBufferPool bufferPool = new StreamExtended.DefaultBufferPool();
+
+                    StreamExtended.Network.CustomBufferedStream yourClientStream = 
+                        new StreamExtended.Network.CustomBufferedStream(socket.GetStream(), bufferPool, 4096);
+
+                    StreamExtended.ClientHelloInfo clientSslHelloInfo = 
+                        await StreamExtended.SslTools.PeekClientHello(yourClientStream, bufferPool);
 
                     //will be null if no client hello was received (not a SSL connection)
                     if (clientSslHelloInfo != null)
@@ -202,7 +208,9 @@ namespace SimpleTlsServer
                     }
                     else
                         System.Console.WriteLine("ciao");
-
+#else
+                    System.Net.Sockets.NetworkStream yourClientStream = socket.GetStream();
+#endif
 
                     System.Net.Security.SslStream stream = new System.Net.Security.SslStream(yourClientStream, false
                         , new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate))
@@ -211,6 +219,7 @@ namespace SimpleTlsServer
                         WriteTimeout = IOTimeout
                     };
 
+                    
                     
 
                     // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-5.0

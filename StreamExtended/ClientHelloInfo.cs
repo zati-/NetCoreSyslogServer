@@ -54,7 +54,10 @@ namespace StreamExtended
         private static string SslVersionToString(int major, int minor)
         {
             string str = "Unknown";
-            if (major == 3 && minor == 3)
+
+            if (major == 3 && minor == 4)
+                str = "TLS/1.3";
+            else if (major == 3 && minor == 3)
                 str = "TLS/1.2";
             else if (major == 3 && minor == 2)
                 str = "TLS/1.1";
