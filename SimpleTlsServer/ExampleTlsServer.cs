@@ -1,12 +1,5 @@
 ﻿
-using System; // Console 
-using System.IO; // MemoryStream 
 using System.Linq;
-using System.Net.Security; // SslStrea
-using System.Security.Cryptography.X509Certificates;
-// using System.Security.Cryptography.X509Certificates;
-using System.Text; // Encoding 
-using System.Threading; // remember the thread 
 
 
 namespace SimpleTlsServer
@@ -64,7 +57,9 @@ namespace SimpleTlsServer
             System.Net.Sockets.TcpListener server = 
                 new System.Net.Sockets.TcpListener(System.Net.IPAddress.Any, 900);
 
-            Thread thread_server = new Thread(new ParameterizedThreadStart(RunServer));
+            System.Threading.Thread thread_server = new System.Threading.Thread(
+                new System.Threading.ParameterizedThreadStart(RunServer)
+            );
             thread_server.Start(server);
 
 
@@ -79,7 +74,8 @@ namespace SimpleTlsServer
 
                 tc.Connect(connectTo, 900);
 
-                SslStream stream = new SslStream(tc.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate)
+                System.Net.Security.SslStream stream = new System.Net.Security.SslStream(tc.GetStream(), false
+                    , new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate)
                     )
                 {
                     ReadTimeout = IOTimeout,
@@ -90,13 +86,11 @@ namespace SimpleTlsServer
                 // stream.AuthenticateAsClient(connectTo, certs, System.Security.Authentication.SslProtocols.Tls12, false);
 
 
-
-
                 // This is where you read and send data
                 while (true)
                 {
-                    string echo = Console.ReadLine();
-                    byte[] buff = Encoding.UTF8.GetBytes(echo + "<EOF>");
+                    string echo = System.Console.ReadLine();
+                    byte[] buff = System.Text.Encoding.UTF8.GetBytes(echo + "<EOF>");
                     stream.Write(buff, 0, buff.Length);
                     stream.Flush();
                     //tc.GetStream().Write(buff, 0, buff.Length);
@@ -108,11 +102,12 @@ namespace SimpleTlsServer
 
         }
 
+
         public static bool ValidateServerCertificate(
               object sender
             , System.Security.Cryptography.X509Certificates.X509Certificate certificate
             , System.Security.Cryptography.X509Certificates.X509Chain chain
-            , SslPolicyErrors sslPolicyErrors)
+            , System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }
@@ -120,18 +115,18 @@ namespace SimpleTlsServer
 
 
         private static bool NoValidateServerCertificate(
-            object sender
-            , X509Certificate certificate
-            , X509Chain chain
-            , SslPolicyErrors sslPolicyErrors)
+              object sender
+            , System.Security.Cryptography.X509Certificates.X509Certificate certificate
+            , System.Security.Cryptography.X509Certificates.X509Chain chain
+            , System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
             // Do not allow this client to communicate with unauthenticated servers.
             bool result = false;
             if (certificate == null)
                 return true;
 
-            X509Certificate2 cert = new X509Certificate2(certificate);
-            string cn = cert.GetNameInfo(X509NameType.SimpleName, false);
+            System.Security.Cryptography.X509Certificates.X509Certificate2 cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificate);
+            string cn = cert.GetNameInfo(System.Security.Cryptography.X509Certificates.X509NameType.SimpleName, false);
             string cleanName = cn.Substring(cn.LastIndexOf('*') + 1);
             // string[] addresses = { _serverAddress, _serverSNIName };
 
@@ -166,7 +161,12 @@ namespace SimpleTlsServer
         // Returns:
         //     An System.Security.Cryptography.X509Certificates.X509Certificate used for establishing
         //     an SSL connection.
-        public static X509Certificate My(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
+        public static System.Security.Cryptography.X509Certificates.X509Certificate My(
+            object sender, 
+            string targetHost,
+            System.Security.Cryptography.X509Certificates.X509CertificateCollection localCertificates,
+            System.Security.Cryptography.X509Certificates.X509Certificate remoteCertificate, 
+            string[] acceptableIssuers)
         {
             System.Console.WriteLine(targetHost);
             return cert;
@@ -177,18 +177,12 @@ namespace SimpleTlsServer
         {
             System.Net.Sockets.TcpListener tcp = (System.Net.Sockets.TcpListener)server;
             tcp.Start();
-            Console.WriteLine("Listening");
+            System.Console.WriteLine("Listening");
             while (true)
             {
-                // var s = await tcp.AcceptSocketAsync();
-                // byte[] buffer2 = new byte[4096];
-                // s.Receive(buffer2);
-                // System.Console.WriteLine(buffer2);
-
-
                 using (System.Net.Sockets.TcpClient socket = await tcp.AcceptTcpClientAsync())
                 {
-                    Console.WriteLine("Client connected");
+                    System.Console.WriteLine("Client connected");
                     // SslStream stream = new SslStream(socket.GetStream());
                     // NoValidateServerCertificate
                     // SslStream stream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate))
@@ -210,7 +204,8 @@ namespace SimpleTlsServer
                         System.Console.WriteLine("ciao");
 
 
-                    SslStream stream = new SslStream(yourClientStream, false, new RemoteCertificateValidationCallback(ValidateServerCertificate))
+                    System.Net.Security.SslStream stream = new System.Net.Security.SslStream(yourClientStream, false
+                        , new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate))
                     {
                         ReadTimeout = IOTimeout,
                         WriteTimeout = IOTimeout
@@ -228,7 +223,7 @@ namespace SimpleTlsServer
                     {
                         //NetworkStream stream= socket.GetStream();
                         System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                        MemoryStream ms = new MemoryStream();
+                        System.IO.MemoryStream ms = new System.IO.MemoryStream();
                         int len = -1;
                         do
                         {
@@ -236,25 +231,30 @@ namespace SimpleTlsServer
                             len = await stream.ReadAsync(buff, 0, buff.Length);
                             await ms.WriteAsync(buff, 0, len);
 
-                            string line = new string(Encoding.UTF8.GetChars(buff, 0, len));
+                            string line = new string(System.Text.Encoding.UTF8.GetChars(buff, 0, len));
                             if (line.EndsWith("<EOF>"))
                                 break;
                         } while (len != 0);
 
                         //string echo=Encoding.UTF8.GetString(buff).Trim('\0');
-                        string echo = Encoding.UTF8.GetString(ms.ToArray());
+                        string echo = System.Text.Encoding.UTF8.GetString(ms.ToArray());
                         ms.Close();
-                        Console.WriteLine(echo);
+                        System.Console.WriteLine(echo);
                         if (echo.Equals("q"))
                         {
                             break;
                         }
-                    }
+                    } // Whend 
 
                     socket.Close();
                 } // End Using socket 
-            }
-        }
-    }
 
-}
+            } // Whend 
+
+        } // End Task RunServer 
+
+
+    } // End Class ExampleTlsServer 
+
+
+} // End Namespace SimpleTlsServer 

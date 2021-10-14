@@ -1,9 +1,4 @@
 ﻿
-using System;
-using System.Text;
-using System.Threading.Tasks;
-
-
 namespace libSyslogServer
 {
 
@@ -16,7 +11,7 @@ namespace libSyslogServer
             {
                 while (true)
                 {
-                    Task.Delay(1000).Wait();
+                    System.Threading.Tasks.Task.Delay(1000).Wait();
 
                     if (System.DateTime.Compare(_LastWritten.AddSeconds(_Settings.LogWriterIntervalSec), System.DateTime.Now) < 0)
                     {
@@ -34,12 +29,12 @@ namespace libSyslogServer
                                  
                                 if (!System.IO.File.Exists(currFilename))
                                 {
-                                    Console.WriteLine("Creating file: " + currFilename + System.Environment.NewLine);
+                                    System.Console.WriteLine("Creating file: " + currFilename + System.Environment.NewLine);
                                     {
                                         using (System.IO.FileStream fsCreate = 
                                             System.IO.File.Create(currFilename))
                                         {
-                                            byte[] createData = new UTF8Encoding(true).GetBytes("--- Creating log file at " + System.DateTime.Now + " ---" + System.Environment.NewLine);
+                                            byte[] createData = new System.Text.UTF8Encoding(true).GetBytes("--- Creating log file at " + System.DateTime.Now + " ---" + System.Environment.NewLine);
                                             fsCreate.Write(createData, 0, createData.Length);
                                         }
                                     }
@@ -60,8 +55,8 @@ namespace libSyslogServer
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("***");
-                Console.WriteLine("WriterTask exiting due to exception: " + e.Message);
+                System.Console.WriteLine("***");
+                System.Console.WriteLine("WriterTask exiting due to exception: " + e.Message);
                 System.Environment.Exit(-1);
             }
         }

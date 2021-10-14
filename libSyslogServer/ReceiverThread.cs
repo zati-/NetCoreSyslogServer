@@ -1,7 +1,4 @@
 ﻿
-using System; // System.Console ?
-using System.Text; // Encoding.ASCII ? 
-
 namespace libSyslogServer
 {
 
@@ -28,21 +25,19 @@ namespace libSyslogServer
                 {
                     
                     receivedBytes = _ListenerUdp.Receive(ref endpoint);
-                    receivedData = Encoding.ASCII.GetString(receivedBytes, 0, receivedBytes.Length);
+                    // Encoding.ASCII ? 
+                    receivedData = System.Text.Encoding.ASCII.GetString(receivedBytes, 0, receivedBytes.Length);
                     string msg = null;
                     if (_Settings.DisplayTimestamps) msg = System.DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + " ";
                     msg += receivedData;
-                    Console.WriteLine(msg);
-                    
+                    System.Console.WriteLine(msg);
                     
 
-                    
                     lock (_WriterLock)
                     {
                         _MessageQueue.Add(msg);
                     }
 
-                    
                 } 
 
                 
@@ -51,8 +46,8 @@ namespace libSyslogServer
             {
                 _ListenerUdp.Close();
                 _ListenerUdp = null;
-                Console.WriteLine("***");
-                Console.WriteLine("ReceiverThread exiting due to exception: " + e.Message);
+                System.Console.WriteLine("***");
+                System.Console.WriteLine("ReceiverThread exiting due to exception: " + e.Message);
                 return;
             }
         }

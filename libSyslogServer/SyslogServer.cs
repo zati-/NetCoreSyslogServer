@@ -1,9 +1,4 @@
 ﻿
-using System;
-using System.Text;
-using System.Threading.Tasks;
-
-
 namespace libSyslogServer
 {
 
@@ -37,16 +32,16 @@ namespace libSyslogServer
             
             if (System.IO.File.Exists("syslog.json"))
             {
-                _SettingsContents = Encoding.UTF8.GetString(
+                _SettingsContents = System.Text.Encoding.UTF8.GetString(
                     System.IO.File.ReadAllBytes("syslog.json")
                 );
             } 
 
             if (System.String.IsNullOrEmpty(_SettingsContents))
             {
-                Console.WriteLine("Unable to read syslog.json, using default configuration:");
+                System.Console.WriteLine("Unable to read syslog.json, using default configuration:");
                 _Settings = Settings.Default();
-                Console.WriteLine(Common.SerializeJson(_Settings));
+                System.Console.WriteLine(Common.SerializeJson(_Settings));
             }
             else
             {
@@ -56,7 +51,7 @@ namespace libSyslogServer
                 }
                 catch (System.Exception)
                 {
-                    Console.WriteLine("Unable to deserialize syslog.json, please check syslog.json for correctness, exiting");
+                    System.Console.WriteLine("Unable to deserialize syslog.json, please check syslog.json for correctness, exiting");
                     System.Environment.Exit(-1);
                 }
             }
@@ -64,11 +59,11 @@ namespace libSyslogServer
             if (!System.IO.Directory.Exists(_Settings.LogFileDirectory))
                 System.IO.Directory.CreateDirectory(_Settings.LogFileDirectory);
 
-            
-            Console.WriteLine("---");
-            Console.WriteLine(_Settings.Version);
-            Console.WriteLine("(c)2017 Joel Christner");
-            Console.WriteLine("---");
+
+            System.Console.WriteLine("---");
+            System.Console.WriteLine(_Settings.Version);
+            System.Console.WriteLine("(c)2017 Joel Christner");
+            System.Console.WriteLine("---");
 
             InternalStartServer();
 
@@ -81,23 +76,23 @@ namespace libSyslogServer
                 switch (userInput)
                 {
                     case "?":
-                        Console.WriteLine("---");
-                        Console.WriteLine("  q      quit the application");
-                        Console.WriteLine("  cls    clear the screen");
+                        System.Console.WriteLine("---");
+                        System.Console.WriteLine("  q      quit the application");
+                        System.Console.WriteLine("  cls    clear the screen");
                         break;
 
-                    case "q": 
-                        Console.WriteLine("Exiting.");
+                    case "q":
+                        System.Console.WriteLine("Exiting.");
                         System.Environment.Exit(0);
                         break;
 
                     case "c":
                     case "cls":
-                        Console.Clear();
+                        System.Console.Clear();
                         break;
                             
                     default:
-                        Console.WriteLine("Unknown command.  Type '?' for help.");
+                        System.Console.WriteLine("Unknown command.  Type '?' for help.");
                         continue;
                 }
             }
@@ -108,20 +103,20 @@ namespace libSyslogServer
         static void InternalStartServer()
         {
             try
-            { 
-                Console.WriteLine("Starting at " + System.DateTime.Now);
+            {
+                System.Console.WriteLine("Starting at " + System.DateTime.Now);
                   
                 _ListenerThread = new System.Threading.Thread(ReceiverThread);
                 _ListenerThread.Start();
-                Console.WriteLine("Listening on UDP/" + _Settings.UdpPort + ".");
+                System.Console.WriteLine("Listening on UDP/" + _Settings.UdpPort + ".");
 
-                Task.Run(() => WriterTask());
-                Console.WriteLine("Writer thread started successfully");
+                System.Threading.Tasks.Task.Run(() => WriterTask());
+                System.Console.WriteLine("Writer thread started successfully");
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("***");
-                Console.WriteLine("Exiting due to exception: " + e.Message);
+                System.Console.WriteLine("***");
+                System.Console.WriteLine("Exiting due to exception: " + e.Message);
                 System.Environment.Exit(-1);
             }
         } 

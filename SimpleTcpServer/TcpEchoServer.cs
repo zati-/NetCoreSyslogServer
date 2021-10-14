@@ -1,15 +1,17 @@
 ﻿
 namespace SimpleTcpServer
 {
+
+
 	// This code is adapted from a sample found at the URL 
 	// "http://blogs.msdn.com/b/jmanning/archive/2004/12/19/325699.aspx"
-
-	using System.Text;
 
 
 	// https://thiscouldbebetter.wordpress.com/2015/01/13/an-echo-server-and-client-in-c-using-tcplistener-and-tcpclient/
 	public class TcpEchoServer
 	{
+
+
 		public static async System.Threading.Tasks.Task Test()
 		{
 			System.Console.WriteLine("Starting echo server...");
@@ -24,10 +26,10 @@ namespace SimpleTcpServer
 
 			System.Net.Sockets.TcpClient client = await listener.AcceptTcpClientAsync();
 			System.Net.Sockets.NetworkStream stream = client.GetStream();
-			System.IO.StreamWriter writer = new System.IO.StreamWriter(stream, Encoding.ASCII) 
+			System.IO.StreamWriter writer = new System.IO.StreamWriter(stream, System.Text.Encoding.ASCII) 
 			{ AutoFlush = true };
 
-			System.IO.StreamReader reader = new System.IO.StreamReader(stream, Encoding.ASCII);
+			System.IO.StreamReader reader = new System.IO.StreamReader(stream, System.Text.Encoding.ASCII);
 
 			while (true)
 			{
@@ -41,8 +43,10 @@ namespace SimpleTcpServer
 
 				System.Console.WriteLine("Server saw disconnect from client.");
 			}
-		}
-	}
+		} // End Task Test 
+
+
+	} // End Class TcpEchoServer 
 
 
 }

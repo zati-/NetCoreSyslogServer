@@ -1,24 +1,24 @@
 ﻿
-using System;
-using System.Text;
-using Newtonsoft.Json; 
-
 namespace libSyslogServer
 {
+
+
     /// <summary>
     /// Commonly used static methods.
     /// </summary>
     public static class Common
     { 
+
+
         public static string SerializeJson(object obj)
         {
             if (obj == null) return null;
-            string json = JsonConvert.SerializeObject(
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(
                 obj,
                 Newtonsoft.Json.Formatting.Indented,
-                new JsonSerializerSettings
+                new Newtonsoft.Json.JsonSerializerSettings
                 {
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                    DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc
                 });
 
             return json;
@@ -26,38 +26,38 @@ namespace libSyslogServer
           
         public static T DeserializeJson<T>(string json)
         {
-            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
+            if (string.IsNullOrEmpty(json)) throw new System.ArgumentNullException(nameof(json));
 
             try
             {
-                return JsonConvert.DeserializeObject<T>(json);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
             }
-            catch (Exception)
+            catch (System.Exception)
             {
-                Console.WriteLine("");
-                Console.WriteLine("Exception while deserializing:");
-                Console.WriteLine(json);
-                Console.WriteLine("");
+                System.Console.WriteLine("");
+                System.Console.WriteLine("Exception while deserializing:");
+                System.Console.WriteLine(json);
+                System.Console.WriteLine("");
                 throw;
             }
         }
 
         public static T DeserializeJson<T>(byte[] data)
         {
-            if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
-            return DeserializeJson<T>(Encoding.UTF8.GetString(data));
+            if (data == null || data.Length < 1) throw new System.ArgumentNullException(nameof(data));
+            return DeserializeJson<T>(System.Text.Encoding.UTF8.GetString(data));
         }
           
         public static bool InputBoolean(string question, bool yesDefault)
         {
-            Console.Write(question);
+            System.Console.Write(question);
 
-            if (yesDefault) Console.Write(" [Y/n]? ");
-            else Console.Write(" [y/N]? ");
+            if (yesDefault) System.Console.Write(" [Y/n]? ");
+            else System.Console.Write(" [y/N]? ");
 
-            string userInput = Console.ReadLine();
+            string userInput = System.Console.ReadLine();
 
-            if (String.IsNullOrEmpty(userInput))
+            if (string.IsNullOrEmpty(userInput))
             {
                 if (yesDefault) return true;
                 return false;
@@ -68,8 +68,8 @@ namespace libSyslogServer
             if (yesDefault)
             {
                 if (
-                    (String.Compare(userInput, "n") == 0)
-                    || (String.Compare(userInput, "no") == 0)
+                       (System.String.Compare(userInput, "n") == 0)
+                    || (System.String.Compare(userInput, "no") == 0)
                    )
                 {
                     return false;
@@ -80,8 +80,8 @@ namespace libSyslogServer
             else
             {
                 if (
-                    (String.Compare(userInput, "y") == 0)
-                    || (String.Compare(userInput, "yes") == 0)
+                       (System.String.Compare(userInput, "y") == 0)
+                    || (System.String.Compare(userInput, "yes") == 0)
                    )
                 {
                     return true;
@@ -95,20 +95,20 @@ namespace libSyslogServer
         {
             while (true)
             {
-                Console.Write(question);
+                System.Console.Write(question);
 
-                if (!String.IsNullOrEmpty(defaultAnswer))
+                if (!string.IsNullOrEmpty(defaultAnswer))
                 {
-                    Console.Write(" [" + defaultAnswer + "]");
+                    System.Console.Write(" [" + defaultAnswer + "]");
                 }
 
-                Console.Write(" ");
+                System.Console.Write(" ");
 
-                string userInput = Console.ReadLine();
+                string userInput = System.Console.ReadLine();
 
-                if (String.IsNullOrEmpty(userInput))
+                if (string.IsNullOrEmpty(userInput))
                 {
-                    if (!String.IsNullOrEmpty(defaultAnswer)) return defaultAnswer;
+                    if (!string.IsNullOrEmpty(defaultAnswer)) return defaultAnswer;
                     if (allowNull) return null;
                     else continue;
                 }
@@ -121,20 +121,20 @@ namespace libSyslogServer
         {
             while (true)
             {
-                Console.Write(question);
-                Console.Write(" [" + defaultAnswer + "] ");
+                System.Console.Write(question);
+                System.Console.Write(" [" + defaultAnswer + "] ");
 
-                string userInput = Console.ReadLine();
+                string userInput = System.Console.ReadLine();
 
-                if (String.IsNullOrEmpty(userInput))
+                if (string.IsNullOrEmpty(userInput))
                 {
                     return defaultAnswer;
                 }
 
                 int ret = 0;
-                if (!Int32.TryParse(userInput, out ret))
+                if (!int.TryParse(userInput, out ret))
                 {
-                    Console.WriteLine("Please enter a valid integer.");
+                    System.Console.WriteLine("Please enter a valid integer.");
                     continue;
                 }
 
@@ -150,7 +150,7 @@ namespace libSyslogServer
                 {
                     if (positiveOnly)
                     {
-                        Console.WriteLine("Please enter a value greater than zero.");
+                        System.Console.WriteLine("Please enter a value greater than zero.");
                         continue;
                     }
                 }

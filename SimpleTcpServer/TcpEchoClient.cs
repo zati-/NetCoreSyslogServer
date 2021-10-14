@@ -8,6 +8,8 @@ namespace SimpleTcpServer
 
 	public class TcpEchoClient
 	{
+
+
 		public static void Test()
 		{
 			System.Console.WriteLine("Starting echo client...");
@@ -30,9 +32,11 @@ namespace SimpleTcpServer
 				writer.WriteLine(lineToSend);
 				string lineReceived = reader.ReadLine();
 				System.Console.WriteLine("Received from server: " + lineReceived);
-			}
-		}
-	}
+			} // Whend 
+		} // End Sub Test 
+
+
+	} // End Class TcpEchoClient 
 
 
 }
