@@ -9,7 +9,9 @@ namespace SyslogServer
 
         public SyslogTlsSession(NetCoreServer.SslServer server, MessageHandler handler) 
             : base(server) 
-        { }
+        {
+            m_messageHandler = handler;
+        }
 
         protected override void OnConnected()
         {
